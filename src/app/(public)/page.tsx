@@ -1,5 +1,6 @@
 import Link from 'next/link';
 import productsData from '../../data/product_data.json';
+import AddToCartButton from '../../components/AddToCartButton';
 
 export default function Home() {
   // Select first 4 products for featured section
@@ -75,9 +76,9 @@ export default function Home() {
                   <span className="text-gray-400 text-sm">{product.rating}</span>
                 </div>
               </div>
-              <button className="mt-6 w-full py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-semibold transition-all hover:bg-white hover:text-black">
+              <AddToCartButton product={product} className="mt-6 w-full py-3.5 bg-white/5 border border-white/10 rounded-xl text-white font-semibold transition-all hover:bg-white hover:text-black">
                 Add to Cart
-              </button>
+              </AddToCartButton>
             </div>
           ))}
         </div>

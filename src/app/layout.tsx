@@ -2,7 +2,9 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { CartProvider } from "../context/CartContext";
+import { WishlistProvider } from "../context/WishlistContext";
 import CartSidebar from "../components/CartSidebar";
+import WishlistSidebar from "../components/WishlistSidebar";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 
@@ -33,10 +35,13 @@ export default function RootLayout({
     >
       <body className="min-h-screen flex flex-col bg-[#050505] text-[#f0f0f0] overflow-x-hidden font-sans">
         <CartProvider>
-          <Navbar />
-          {children}
-          <CartSidebar />
-          <Footer />
+          <WishlistProvider>
+            <Navbar />
+            {children}
+            <CartSidebar />
+            <WishlistSidebar />
+            <Footer />
+          </WishlistProvider>
         </CartProvider>
       </body>
     </html>

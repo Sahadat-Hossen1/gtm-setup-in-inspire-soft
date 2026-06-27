@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Button } from './ui/button';
+import { useCart } from '../context/CartContext';
+import WishlistToggleButton from './WishlistToggleButton';
 
 interface Product {
   id: string;
@@ -19,6 +21,8 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
+  const { addToCart } = useCart();
+
   return (
     <div className="group bg-[#0a0a0a] border border-[#222] rounded-2xl p-4 transition-all duration-300 ease-out flex flex-col hover:border-[#444] hover:shadow-2xl">
       <Link href={`/product/${product.id}`} className="w-full aspect-[4/5] bg-[#111] rounded-xl mb-5 flex items-center justify-center overflow-hidden relative cursor-pointer block">
@@ -30,17 +34,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
         />
         {/* Wishlist Button Overlay */}
-        <button 
-          className="absolute top-3 right-3 bg-black/40 backdrop-blur-md p-2 rounded-full border border-white/10 text-zinc-400 hover:text-red-500 hover:bg-black/60 transition-all z-10"
-          onClick={(e) => {
-            e.preventDefault(); // Prevent navigating to product detail
-            // Wishlist logic here
-          }}
-        >
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
-          </svg>
-        </button>
+        <WishlistToggleButton product={product} />
       </Link>
       
       <div className="flex flex-col gap-1.5 flex-1 px-1">
@@ -67,8 +61,11 @@ export default function ProductCard({ product }: ProductCardProps) {
         </div>
       </div>
       
-      <Button className="mt-5 w-full rounded-xl bg-[#1a1a1a] border border-[#333] text-zinc-300 font-medium transition-all hover:bg-white hover:text-black hover:border-white h-11 text-sm">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <Button 
+        onClick={() => addToCart(product)}
+        className="mt-5 w-full rounded-xl bg-[#1a1a1a] border border-[#333] text-zinc-300 font-medium transition-all hover:bg-white hover:text-black hover:border-white h-11 text-sm"
+      >
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
           <path d="M12 5v14M5 12h14"/>
         </svg>
         Add to Cart
