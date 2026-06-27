@@ -1,0 +1,272 @@
+[
+  {
+    "id": "e1",
+    "name": "Wireless Noise-Canceling Headphones",
+    "price": 299.99,
+    "image": "https://placehold.co/600x600/png?text=Headphones",
+    "category": "Electronics",
+    "description": "Premium noise-canceling over-ear headphones with 30-hour battery life and immersive sound quality.",
+    "rating": 4.8
+  },
+  {
+    "id": "e2",
+    "name": "4K Ultra HD Smart TV",
+    "price": 799.00,
+    "image": "https://placehold.co/600x600/png?text=Smart+TV",
+    "category": "Electronics",
+    "description": "55-inch 4K Smart TV featuring vibrant colors, HDR10 support, and built-in streaming applications.",
+    "rating": 4.6
+  },
+  {
+    "id": "e3",
+    "name": "Smartphone Pro Max",
+    "price": 1099.00,
+    "image": "https://placehold.co/600x600/png?text=Smartphone",
+    "category": "Electronics",
+    "description": "The latest flagship smartphone with a pro-grade camera system and all-day battery life.",
+    "rating": 4.9
+  },
+  {
+    "id": "e4",
+    "name": "Bluetooth Portable Speaker",
+    "price": 59.99,
+    "image": "https://placehold.co/600x600/png?text=Speaker",
+    "category": "Electronics",
+    "description": "Waterproof portable speaker delivering punchy bass and up to 12 hours of playtime.",
+    "rating": 4.5
+  },
+  {
+    "id": "e5",
+    "name": "Laptop Creator Pro",
+    "price": 1499.00,
+    "image": "https://placehold.co/600x600/png?text=Laptop",
+    "category": "Electronics",
+    "description": "High-performance laptop engineered for creators and professionals with a stunning OLED display.",
+    "rating": 4.7
+  },
+  {
+    "id": "e6",
+    "name": "Smartwatch Active",
+    "price": 199.50,
+    "image": "https://placehold.co/600x600/png?text=Smartwatch",
+    "category": "Electronics",
+    "description": "Advanced fitness tracking smartwatch with heart rate monitoring and GPS capabilities.",
+    "rating": 4.4
+  },
+  {
+    "id": "e7",
+    "name": "Gaming Console Gen X",
+    "price": 499.00,
+    "image": "https://placehold.co/600x600/png?text=Console",
+    "category": "Electronics",
+    "description": "Next-generation gaming console offering immersive 4K graphics and lightning-fast load times.",
+    "rating": 4.8
+  },
+  {
+    "id": "e8",
+    "name": "Mirrorless Digital Camera",
+    "price": 899.00,
+    "image": "https://placehold.co/600x600/png?text=Camera",
+    "category": "Electronics",
+    "description": "Compact mirrorless camera perfect for vlogging, street photography, and capturing 4K video.",
+    "rating": 4.7
+  },
+  {
+    "id": "e9",
+    "name": "Ergonomic Wireless Mouse",
+    "price": 39.99,
+    "image": "https://placehold.co/600x600/png?text=Mouse",
+    "category": "Electronics",
+    "description": "Comfortable ergonomic mouse designed to reduce wrist strain during long work sessions.",
+    "rating": 4.6
+  },
+  {
+    "id": "e10",
+    "name": "Mechanical Gaming Keyboard",
+    "price": 129.99,
+    "image": "https://placehold.co/600x600/png?text=Keyboard",
+    "category": "Electronics",
+    "description": "RGB backlit mechanical keyboard featuring fast-actuating tactile switches for gamers.",
+    "rating": 4.8
+  },
+  {
+    "id": "f1",
+    "name": "Classic White Sneakers",
+    "price": 79.99,
+    "image": "https://placehold.co/600x600/png?text=Sneakers",
+    "category": "Fashion",
+    "description": "Versatile and extremely comfortable white sneakers that pair well with any casual outfit.",
+    "rating": 4.7
+  },
+  {
+    "id": "f2",
+    "name": "Vintage Denim Jacket",
+    "price": 89.00,
+    "image": "https://placehold.co/600x600/png?text=Denim+Jacket",
+    "category": "Fashion",
+    "description": "A timeless vintage wash denim jacket designed with a relaxed, comfortable fit.",
+    "rating": 4.5
+  },
+  {
+    "id": "f3",
+    "name": "Graphic Cotton T-Shirt",
+    "price": 24.99,
+    "image": "https://placehold.co/600x600/png?text=T-Shirt",
+    "category": "Fashion",
+    "description": "100% organic cotton t-shirt featuring a unique, modern graphic print.",
+    "rating": 4.6
+  },
+  {
+    "id": "f4",
+    "name": "Leather Crossbody Bag",
+    "price": 120.00,
+    "image": "https://placehold.co/600x600/png?text=Crossbody+Bag",
+    "category": "Fashion",
+    "description": "Elegant genuine leather crossbody bag complete with adjustable strap and multiple compartments.",
+    "rating": 4.8
+  },
+  {
+    "id": "f5",
+    "name": "Polarized Sunglasses",
+    "price": 45.50,
+    "image": "https://placehold.co/600x600/png?text=Sunglasses",
+    "category": "Fashion",
+    "description": "Stylish UV400 polarized sunglasses featuring a classic, durable frame design.",
+    "rating": 4.4
+  },
+  {
+    "id": "f6",
+    "name": "Athletic Running Shorts",
+    "price": 35.00,
+    "image": "https://placehold.co/600x600/png?text=Shorts",
+    "category": "Fashion",
+    "description": "Lightweight and highly breathable running shorts engineered for optimal performance.",
+    "rating": 4.7
+  },
+  {
+    "id": "f7",
+    "name": "Wool Blend Overcoat",
+    "price": 199.00,
+    "image": "https://placehold.co/600x600/png?text=Overcoat",
+    "category": "Fashion",
+    "description": "A stylish and warm wool blend overcoat, perfect for layering during winter months.",
+    "rating": 4.8
+  },
+  {
+    "id": "f8",
+    "name": "Slim Fit Chinos",
+    "price": 55.00,
+    "image": "https://placehold.co/600x600/png?text=Chinos",
+    "category": "Fashion",
+    "description": "Comfortable slim-fit chinos versatile enough for both casual outings and workwear.",
+    "rating": 4.5
+  },
+  {
+    "id": "f9",
+    "name": "Knitted Winter Beanie",
+    "price": 18.00,
+    "image": "https://placehold.co/600x600/png?text=Beanie",
+    "category": "Fashion",
+    "description": "A cozy, thickly knitted beanie guaranteed to keep you warm in the coldest weather.",
+    "rating": 4.6
+  },
+  {
+    "id": "f10",
+    "name": "Minimalist Wristwatch",
+    "price": 150.00,
+    "image": "https://placehold.co/600x600/png?text=Wristwatch",
+    "category": "Fashion",
+    "description": "Sleek, elegant wristwatch with a genuine leather strap and reliable quartz movement.",
+    "rating": 4.9
+  },
+  {
+    "id": "h1",
+    "name": "Ceramic Coffee Mug",
+    "price": 14.99,
+    "image": "https://placehold.co/600x600/png?text=Mug",
+    "category": "Home",
+    "description": "Beautifully handcrafted ceramic mug, perfectly sized for your morning coffee or tea.",
+    "rating": 4.8
+  },
+  {
+    "id": "h2",
+    "name": "Linen Bed Sheet Set",
+    "price": 110.00,
+    "image": "https://placehold.co/600x600/png?text=Bed+Sheets",
+    "category": "Home",
+    "description": "Breathable, ultra-soft 100% linen bed sheet set for a comfortable night's sleep.",
+    "rating": 4.7
+  },
+  {
+    "id": "h3",
+    "name": "Modern LED Desk Lamp",
+    "price": 45.00,
+    "image": "https://placehold.co/600x600/png?text=Desk+Lamp",
+    "category": "Home",
+    "description": "Adjustable LED desk lamp featuring multiple brightness settings and color temperatures.",
+    "rating": 4.5
+  },
+  {
+    "id": "h4",
+    "name": "Aromatherapy Diffuser",
+    "price": 34.50,
+    "image": "https://placehold.co/600x600/png?text=Diffuser",
+    "category": "Home",
+    "description": "Ultrasonic essential oil diffuser paired with soothing, ambient color-changing lighting.",
+    "rating": 4.6
+  },
+  {
+    "id": "h5",
+    "name": "Cast Iron Skillet",
+    "price": 65.00,
+    "image": "https://placehold.co/600x600/png?text=Skillet",
+    "category": "Home",
+    "description": "Heavy-duty, pre-seasoned cast iron skillet for exceptional heat retention and versatile cooking.",
+    "rating": 4.9
+  },
+  {
+    "id": "h6",
+    "name": "Faux Fur Throw Blanket",
+    "price": 50.00,
+    "image": "https://placehold.co/600x600/png?text=Blanket",
+    "category": "Home",
+    "description": "An incredibly soft and luxurious faux fur throw blanket for cozy evenings on the couch.",
+    "rating": 4.8
+  },
+  {
+    "id": "h7",
+    "name": "Indoor Potted Plant",
+    "price": 29.99,
+    "image": "https://placehold.co/600x600/png?text=Plant",
+    "category": "Home",
+    "description": "A low-maintenance, air-purifying indoor plant to brighten up your living space.",
+    "rating": 4.4
+  },
+  {
+    "id": "h8",
+    "name": "Minimalist Wall Clock",
+    "price": 25.00,
+    "image": "https://placehold.co/600x600/png?text=Wall+Clock",
+    "category": "Home",
+    "description": "A stylish, silent sweeping minimalist wall clock that complements any modern decor.",
+    "rating": 4.6
+  },
+  {
+    "id": "h9",
+    "name": "Bamboo Cutting Board",
+    "price": 22.00,
+    "image": "https://placehold.co/600x600/png?text=Cutting+Board",
+    "category": "Home",
+    "description": "Durable, eco-friendly bamboo cutting board that is gentle on your kitchen knives.",
+    "rating": 4.7
+  },
+  {
+    "id": "h10",
+    "name": "Scented Soy Candle",
+    "price": 19.99,
+    "image": "https://placehold.co/600x600/png?text=Candle",
+    "category": "Home",
+    "description": "Hand-poured soy candle infused with a calming, long-lasting lavender scent.",
+    "rating": 4.8
+  }
+]
