@@ -1,4 +1,7 @@
-# Inspire Soft — Premium eCommerce Frontend Demo
+# Inspire Soft — Premium eCommerce Frontend Demo (GTM Setup)
+
+> [!NOTE]
+> **Vibe Code & Analytics Demo:** This eCommerce storefront project is built fully with AI-generated "vibe code." The primary objective of this repository is to demonstrate and implement a clean, hardcoded setup for **Google Tag Manager (GTM)**, **Google Tag (gtag)**, and custom **GTM tracking events** (e.g., e-commerce events like `view_item`, `add_to_cart`, `remove_from_cart`, `view_cart`, `begin_checkout`, and `purchase`) within a Next.js App Router environment.
 
 An elegant, modern, and high-fidelity eCommerce user interface built with **Next.js (App Router)**, **React 19**, **Tailwind CSS (v4)**, and **TypeScript**. 
 
@@ -114,8 +117,46 @@ Make sure you have [Node.js](https://nodejs.org) and [Yarn](https://yarnpkg.com/
 
 ---
 
+## 📊 Google Tag Manager & Custom Events Tracking
+
+This project is primed for analytics implementation. You can hardcode Google Tag Manager (GTM) scripts or Google Tags directly and push custom events to the `window.dataLayer` array. 
+
+Here are the key custom e-commerce events and their proposed integration locations:
+
+| Event Name | Description | Suggested File Location |
+| :--- | :--- | :--- |
+| `view_item` | Triggered when a user views a specific product detail page. | `src/app/(public)/product/[id]/page.tsx` |
+| `add_to_cart` | Triggered when an item is added to the shopping cart. | `src/components/AddToCartButton.tsx` |
+| `remove_from_cart` | Triggered when an item is removed from the cart drawer. | `src/components/CartSidebar.tsx` |
+| `view_cart` | Triggered when the sliding cart drawer is opened. | `src/components/CartSidebar.tsx` |
+| `begin_checkout` | Triggered when a user starts the checkout process. | `src/components/CartSidebar.tsx` |
+| `purchase` | Triggered upon successful mockup order submission. | `src/app/(public)/purchase/page.tsx` |
+
+### Hardcoding Example
+```typescript
+// Example custom event pushed to dataLayer:
+window.dataLayer = window.dataLayer || [];
+window.dataLayer.push({
+  event: 'add_to_cart',
+  ecommerce: {
+    value: product.price,
+    currency: 'USD',
+    items: [{
+      item_id: product.id,
+      item_name: product.name,
+      price: product.price,
+      item_category: product.category,
+      quantity: 1
+    }]
+  }
+});
+```
+
+---
+
 ## ⚠️ Notes for Developers (Mock Project Constraints)
 
 *   **No Real Backend:** All pages (Login, Checkout, and Profile) operate strictly in the client-side state. Do not implement server API calls or real payment integrations.
 *   **State Persistence:** Cart and Wishlist statuses operate using pure React Context. User sessions utilize `localStorage` for UI testing purposes only.
 *   **Images:** Product assets are loaded using high-quality placeholder URLs (`https://placehold.co/...`). Do not upload heavy static image files.
+
