@@ -24,8 +24,8 @@ export const metadata: Metadata = {
   title: "Inspire Soft",
   description: "Curated products for the modern lifestyle",
 };
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || 'GTM-XXXXXXX';
 
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || 'GTM-M3M2K4CH';
 export default function RootLayout({
   children,
 }: Readonly<{
