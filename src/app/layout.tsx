@@ -9,6 +9,7 @@ import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
 import { GoogleTagManager } from "@next/third-parties/google";
 import GTMInitializer from "@/components/GTMInitializer";
+import { Suspense } from "react";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -25,7 +26,7 @@ export const metadata: Metadata = {
   description: "Curated products for the modern lifestyle",
 };
 
-const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || 'GTM-M3M2K4CH';
+const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -36,20 +37,19 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <head>
-                <GoogleTagManager gtmId={GTM_ID} />
-
-      </head>
+      <GoogleTagManager gtmId={GTM_ID} />
       <body className="min-h-screen flex flex-col bg-[#050505] text-[#f0f0f0] overflow-x-hidden font-sans">
-       <noscript>
+       {/* <noscript>
           <iframe
             src={`https://www.googletagmanager.com/ns.html?id=${GTM_ID}`}
             height="0"
             width="0"
             style={{ display: 'none', visibility: 'hidden' }}
           />
-        </noscript>
-        <GTMInitializer />
+        </noscript> */}
+        <Suspense fallback={null}>
+          <GTMInitializer />
+        </Suspense>
 
         <CartProvider>
           <WishlistProvider>
