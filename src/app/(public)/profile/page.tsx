@@ -5,57 +5,88 @@ import { User, Package, MapPin, Settings, LogOut, ChevronRight, Edit2 } from 'lu
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
 
+interface SavedOrder {
+  orderNumber: string
+  userEmail: string
+  customer: {
+    fullName: string
+    email: string
+    phone: string
+  }
+  deliveryAddress: {
+    street: string
+    city: string
+    zipCode: string
+  }
+  items: {
+    id: string
+    name: string
+    category: string
+    price: number
+    quantity: number
+    lineTotal: number
+  }[]
+  total: number
+  placedAt: string
+}
+
+interface ProfileState {
+  email: string
+  name: string
+  initials: string
+  phone: string
+  orders: SavedOrder[]
+}
+
+const getProfileState = (): ProfileState | null => {
+  if (typeof window === 'undefined') {
+    return null
+  }
+
+  const sessionStr = localStorage.getItem('user_session')
+  if (!sessionStr) {
+    return null
+  }
+
+  try {
+    const session = JSON.parse(sessionStr)
+    if (!session?.email) {
+      return null
+    }
+
+    const namePart = session.email.split('@')[0]
+    const name = namePart
+      .split('.')
+      .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
+      .join(' ')
+    const nameParts = name.split(' ')
+    const initials = nameParts.length >= 2
+      ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+      : name.substring(0, 2).toUpperCase()
+    const orders = JSON.parse(localStorage.getItem('inspire_orders') || '[]') as SavedOrder[]
+
+    return {
+      email: session.email,
+      name,
+      initials,
+      phone: session.phone || '+1 (555) 000-0000',
+      orders: orders.filter((order) => order.userEmail === session.email || order.customer.email === session.email),
+    }
+  } catch {
+    localStorage.removeItem('user_session')
+    return null
+  }
+}
+
 export default function ProfilePage() {
   const router = useRouter()
-  const [userEmail, setUserEmail] = useState<string | null>(null)
-  const [userName, setUserName] = useState<string>('Guest User')
-  const [userInitials, setUserInitials] = useState<string>('GU')
-  const [userPhone, setUserPhone] = useState<string>('+1 (555) 000-0000')
+  const [profile] = useState<ProfileState | null>(getProfileState)
 
   useEffect(() => {
-    // Check if user is logged in
-    const sessionStr = localStorage.getItem('user_session')
-    if (!sessionStr) {
-      router.push('/login')
-      return
-    }
-
-    try {
-      const session = JSON.parse(sessionStr)
-      if (session && session.email) {
-        setUserEmail(session.email)
-        
-        // Generate name from email (e.g., john.doe@example.com -> John Doe)
-        const namePart = session.email.split('@')[0]
-        const formattedName = namePart
-          .split('.')
-          .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
-          .join(' ')
-        
-        setUserName(formattedName)
-        
-        // Generate initials
-        const parts = formattedName.split(' ')
-        if (parts.length >= 2) {
-          setUserInitials(`${parts[0][0]}${parts[1][0]}`.toUpperCase())
-        } else {
-          setUserInitials(formattedName.substring(0, 2).toUpperCase())
-        }
-
-        // Generate or retrieve phone number for this user
-        let phone = session.phone
-        if (!phone) {
-          phone = `+1 (555) ${Math.floor(100 + Math.random() * 900)}-${Math.floor(1000 + Math.random() * 9000)}`
-          session.phone = phone
-          localStorage.setItem('user_session', JSON.stringify(session))
-        }
-        setUserPhone(phone)
-      }
-    } catch (e) {
-      console.error('Invalid session')
+    if (!profile) {
       router.push('/login')
     }
-  }, [router])
+  }, [router, profile])
 
   const handleSignOut = () => {
     localStorage.removeItem('user_session')
@@ -63,7 +94,7 @@ export default function ProfilePage() {
   }
 
   // Show nothing while checking auth to prevent flicker
-  if (!userEmail) {
+  if (!profile) {
     return <div className="min-h-[calc(100vh-8rem)] bg-muted/10"></div>
   }
 
@@ -118,11 +149,11 @@ export default function ProfilePage() {
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-10 gap-6">
                 <div className="flex items-center gap-6">
                   <div className="w-24 h-24 bg-gradient-to-br from-primary/20 to-primary/5 rounded-[2rem] flex items-center justify-center text-primary text-3xl font-extrabold shadow-inner">
-                    {userInitials}
+                    {profile.initials}
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold tracking-tight mb-1">{userName}</h2>
-                    <p className="text-muted-foreground font-medium">{userEmail}</p>
+                    <h2 className="text-3xl font-bold tracking-tight mb-1">{profile.name}</h2>
+                    <p className="text-muted-foreground font-medium">{profile.email}</p>
                   </div>
                 </div>
                 <Button variant="outline" className="rounded-xl border-border/50 hover:bg-muted h-12 px-6">
@@ -134,7 +165,7 @@ export default function ProfilePage() {
               <div className="grid sm:grid-cols-2 gap-8 pt-8 border-t border-border/40">
                 <div className="bg-muted/20 p-5 rounded-2xl">
                   <p className="text-sm text-muted-foreground mb-1.5 font-medium">Phone Number</p>
-                  <p className="text-lg font-semibold text-foreground">{userPhone}</p>
+                  <p className="text-lg font-semibold text-foreground">{profile.phone}</p>
                 </div>
                 <div className="bg-muted/20 p-5 rounded-2xl">
                   <p className="text-sm text-muted-foreground mb-1.5 font-medium">Member Since</p>
@@ -151,31 +182,41 @@ export default function ProfilePage() {
               </div>
               
               <div className="space-y-5">
-                {[
-                  { id: '849201', date: 'Oct 24, 2026', total: 129.99, status: 'Delivered', color: 'text-green-500' },
-                  { id: '838192', date: 'Oct 12, 2026', total: 45.00, status: 'In Transit', color: 'text-blue-500' }
-                ].map((order, i) => (
-                  <div key={i} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-2xl border border-border/60 hover:border-primary/30 hover:shadow-md transition-all gap-4 group bg-muted/10">
-                    <div className="flex items-center gap-5">
-                      <div className="w-14 h-14 bg-background border border-border/50 rounded-xl flex items-center justify-center shadow-sm">
-                        <Package className="w-6 h-6 text-muted-foreground" />
-                      </div>
-                      <div>
-                        <p className="font-bold text-lg mb-0.5">Order #ORD-{order.id}</p>
-                        <p className="text-sm text-muted-foreground font-medium">Placed on {order.date}</p>
-                      </div>
-                    </div>
-                    <div className="flex items-center justify-between sm:w-auto w-full gap-6">
-                      <div className="text-right">
-                        <p className="font-bold text-lg">${order.total.toFixed(2)}</p>
-                        <p className={`text-sm font-bold ${order.color}`}>{order.status}</p>
-                      </div>
-                      <Button variant="secondary" className="rounded-xl h-11 bg-background hover:bg-muted font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                        View Details
-                      </Button>
-                    </div>
+                {profile.orders.length === 0 ? (
+                  <div className="p-6 rounded-2xl border border-border/60 bg-muted/10 text-center">
+                    <p className="text-muted-foreground font-medium">No orders placed yet.</p>
                   </div>
-                ))}
+                ) : (
+                  profile.orders.map((order) => {
+                    const itemCount = order.items.reduce((total, item) => total + item.quantity, 0)
+                    const placedDate = order.placedAt ? order.placedAt.slice(0, 10) : 'Today'
+
+                    return (
+                      <div key={order.orderNumber} className="flex flex-col sm:flex-row sm:items-center justify-between p-5 rounded-2xl border border-border/60 hover:border-primary/30 hover:shadow-md transition-all gap-4 group bg-muted/10">
+                        <div className="flex items-center gap-5">
+                          <div className="w-14 h-14 bg-background border border-border/50 rounded-xl flex items-center justify-center shadow-sm">
+                            <Package className="w-6 h-6 text-muted-foreground" />
+                          </div>
+                          <div>
+                            <p className="font-bold text-lg mb-0.5">Order #{order.orderNumber}</p>
+                            <p className="text-sm text-muted-foreground font-medium">
+                              Placed on {placedDate} - {itemCount} item{itemCount === 1 ? '' : 's'} - {order.deliveryAddress.city}
+                            </p>
+                          </div>
+                        </div>
+                        <div className="flex items-center justify-between sm:w-auto w-full gap-6">
+                          <div className="text-right">
+                            <p className="font-bold text-lg">${order.total.toFixed(2)}</p>
+                            <p className="text-sm font-bold text-blue-500">Processing</p>
+                          </div>
+                          <Button variant="secondary" className="rounded-xl h-11 bg-background hover:bg-muted font-semibold group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
+                            View Details
+                          </Button>
+                        </div>
+                      </div>
+                    )
+                  })
+                )}
               </div>
             </div>
 

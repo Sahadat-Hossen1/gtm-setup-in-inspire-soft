@@ -14,18 +14,19 @@ export default function LoginPage() {
     e.preventDefault()
     setIsLoading(true)
     
-    // Extract form data using FormData API
     const formData = new FormData(e.currentTarget)
     const data = Object.fromEntries(formData.entries())
+    const email = String(data.email)
+    const loginData = {
+      email,
+      loggedInAt: new Date().toISOString(),
+    }
     
-    // Log the data to the console as requested
-    console.log("=== Login Form Submitted ===")
-    console.log("Data:", data)
+    console.log("Login submitted:", loginData)
     
     // Simulate a brief loading state for better UX
     setTimeout(() => {
-      // Store user info in localStorage
-      localStorage.setItem('user_session', JSON.stringify({ email: data.email }))
+      localStorage.setItem('user_session', JSON.stringify(loginData))
       
       setIsLoading(false)
       // Redirect to profile page

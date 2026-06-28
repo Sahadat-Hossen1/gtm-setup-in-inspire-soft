@@ -1,30 +1,101 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { CheckCircle2, ArrowLeft, Package, MapPin, Phone, User, Mail, CreditCard, ShoppingBag } from 'lucide-react'
 import Link from 'next/link'
+import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
 
 export default function PurchasePage() {
+  const getStoredSession = () => {
+    if (typeof window === 'undefined') {
+      return null
+    }
+
+    const sessionStr = localStorage.getItem('user_session')
+    if (!sessionStr) {
+      return null
+    }
+
+    try {
+      const session = JSON.parse(sessionStr)
+      return session?.email ? session : null
+    } catch {
+      localStorage.removeItem('user_session')
+      return null
+    }
+  }
+
   const [isPlaced, setIsPlaced] = useState(false)
   const [orderNumber, setOrderNumber] = useState<string>('')
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [userSession] = useState<{ email: string } | null>(getStoredSession)
   const { items, clearCart } = useCart()
+  const router = useRouter()
 
   const totalPrice = items.reduce((total, item) => total + (item.price * item.quantity), 0)
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (!userSession) {
+      router.push('/login')
+    }
+  }, [router, userSession])
+
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+
+    if (!userSession) {
+      router.push('/login')
+      return
+    }
+
+    const formData = new FormData(e.currentTarget)
+    const zipCode = String(formData.get('zipCode') || '')
+    const generatedOrderNumber = `ORD-${items.length}${zipCode.slice(-5).padStart(5, '0')}`
+    const orderData = {
+      orderNumber: generatedOrderNumber,
+      userEmail: userSession.email,
+      customer: {
+        fullName: String(formData.get('fullName') || ''),
+        email: String(formData.get('email') || userSession.email),
+        phone: String(formData.get('phone') || ''),
+      },
+      deliveryAddress: {
+        street: String(formData.get('streetAddress') || ''),
+        city: String(formData.get('city') || ''),
+        zipCode,
+      },
+      items: items.map((item) => ({
+        id: item.id,
+        name: item.name,
+        category: item.category,
+        price: item.price,
+        quantity: item.quantity,
+        lineTotal: item.price * item.quantity,
+      })),
+      subtotal: totalPrice,
+      shipping: 0,
+      total: totalPrice,
+      placedAt: new Date().toISOString(),
+    }
+
+    console.log('Order placed:', orderData)
+    const savedOrders = JSON.parse(localStorage.getItem('inspire_orders') || '[]')
+    localStorage.setItem('inspire_orders', JSON.stringify([orderData, ...savedOrders]))
     setIsSubmitting(true)
     
     // Simulate network delay for placing order
     setTimeout(() => {
-      setOrderNumber(`ORD-${Math.floor(Math.random() * 900000) + 100000}`)
+      setOrderNumber(generatedOrderNumber)
       setIsSubmitting(false)
       setIsPlaced(true)
       clearCart()
     }, 1500)
+  }
+
+  if (!userSession) {
+    return <div className="min-h-[calc(100vh-8rem)] bg-muted/10" />
   }
 
   // --- Success State UI ---
@@ -101,7 +172,7 @@ export default function PurchasePage() {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold ml-1 text-foreground/80">Full Name</label>
-                  <input required type="text" placeholder="John Doe" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
+                  <input required name="fullName" type="text" placeholder="John Doe" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
                 </div>
                 <div className="space-y-2">
                   <label className="text-sm font-semibold ml-1 text-foreground/80">Email Address</label>
@@ -109,7 +180,7 @@ export default function PurchasePage() {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Mail className="h-4 w-4 text-muted-foreground/60" />
                     </div>
-                    <input required type="email" placeholder="john@example.com" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background pl-11 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
+                    <input required name="email" type="email" defaultValue={userSession?.email || ''} placeholder="john@example.com" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background pl-11 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
                   </div>
                 </div>
               </div>
@@ -123,16 +194,16 @@ export default function PurchasePage() {
               <div className="space-y-5">
                 <div className="space-y-2">
                   <label className="text-sm font-semibold ml-1 text-foreground/80">Street Address</label>
-                  <input required type="text" placeholder="123 Main Street, Apt 4B" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
+                  <input required name="streetAddress" type="text" placeholder="123 Main Street, Apt 4B" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
                   <div className="space-y-2 md:col-span-2">
                     <label className="text-sm font-semibold ml-1 text-foreground/80">City</label>
-                    <input required type="text" placeholder="New York" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
+                    <input required name="city" type="text" placeholder="New York" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
                   </div>
                   <div className="space-y-2">
                     <label className="text-sm font-semibold ml-1 text-foreground/80">Zip Code</label>
-                    <input required type="text" placeholder="10001" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
+                    <input required name="zipCode" type="text" placeholder="10001" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
                   </div>
                 </div>
                 <div className="space-y-2">
@@ -141,7 +212,7 @@ export default function PurchasePage() {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                       <Phone className="h-4 w-4 text-muted-foreground/60" />
                     </div>
-                    <input required type="tel" placeholder="+1 (555) 000-0000" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background pl-11 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
+                    <input required name="phone" type="tel" placeholder="+1 (555) 000-0000" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background pl-11 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
                   </div>
                 </div>
               </div>

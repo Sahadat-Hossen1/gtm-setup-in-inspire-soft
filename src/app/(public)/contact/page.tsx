@@ -5,6 +5,23 @@ import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 
 export default function ContactPage() {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+
+    const formData = new FormData(e.currentTarget)
+    const contactData = {
+      firstName: String(formData.get('firstName') || ''),
+      lastName: String(formData.get('lastName') || ''),
+      email: String(formData.get('email') || ''),
+      subject: String(formData.get('subject') || ''),
+      message: String(formData.get('message') || ''),
+      submittedAt: new Date().toISOString(),
+    }
+
+    console.log('Contact form submitted:', contactData)
+    e.currentTarget.reset()
+  }
+
   return (
     <div className="flex flex-col min-h-screen">
       {/* Hero Section */}
@@ -91,14 +108,15 @@ export default function ContactPage() {
             {/* Contact Form */}
             <div className="bg-card p-8 md:p-10 rounded-3xl border border-border shadow-sm">
               <h2 className="text-3xl font-bold mb-8 text-foreground">Send us a message</h2>
-              {/* As per rules, no real backend logic. Form just prevents default submission */}
-              <form className="space-y-6" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-6" onSubmit={handleSubmit}>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="space-y-2">
                     <label htmlFor="first-name" className="text-sm font-medium">First name</label>
                     <input 
                       type="text" 
                       id="first-name" 
+                      name="firstName"
+                      required
                       className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors" 
                       placeholder="First name"
                     />
@@ -108,6 +126,8 @@ export default function ContactPage() {
                     <input 
                       type="text" 
                       id="last-name" 
+                      name="lastName"
+                      required
                       className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors" 
                       placeholder="Last name"
                     />
@@ -119,6 +139,8 @@ export default function ContactPage() {
                   <input 
                     type="email" 
                     id="email" 
+                    name="email"
+                    required
                     className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors" 
                     placeholder="you@example.com"
                   />
@@ -129,6 +151,8 @@ export default function ContactPage() {
                   <input 
                     type="text" 
                     id="subject" 
+                    name="subject"
+                    required
                     className="flex h-12 w-full rounded-lg border border-input bg-background px-4 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 transition-colors" 
                     placeholder="How can we help?"
                   />
@@ -138,6 +162,8 @@ export default function ContactPage() {
                   <label htmlFor="message" className="text-sm font-medium">Message</label>
                   <textarea 
                     id="message" 
+                    name="message"
+                    required
                     className="flex min-h-[160px] w-full rounded-lg border border-input bg-background px-4 py-3 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 resize-y transition-colors" 
                     placeholder="Leave us a message..."
                   />

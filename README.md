@@ -1,36 +1,121 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Inspire Soft — Premium eCommerce Frontend Demo
 
-## Getting Started
+An elegant, modern, and high-fidelity eCommerce user interface built with **Next.js (App Router)**, **React 19**, **Tailwind CSS (v4)**, and **TypeScript**. 
 
-First, run the development server:
+This repository showcases advanced frontend skills, including custom animations, sleek dark mode aesthetics, interactive sidebars/drawers, and global state management using React Context—all optimized for a fluid, premium shopping experience.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+---
+
+## 🚀 Key Features
+
+*   **Premium Visual Experience:** A fully optimized dark-themed UI featuring curated gradient accents (orange-peach), clean typography, modern layouts, glassmorphism (`backdrop-blur`), and subtle micro-interactions.
+*   **Dynamic Product Listing:** Displays a library of modern lifestyle products with detail pages loaded dynamically using Next.js routing parameters.
+*   **Interactive Shopping Cart:** Real-time state management using `CartContext` with an animated slide-over cart sidebar/drawer for adding, modifying, and removing products.
+*   **Interactive Wishlist:** Quick-toggle wishlist state management with an animated drawer for keeping track of favorited items.
+*   **UI-Only Authentication & Profile:** Smooth mock-login system that stores session state in `localStorage` and routes users to a custom dashboard page.
+*   **Streamlined Checkout & Purchase Success:** High-fidelity simulated checkout process complete with shipping details entry and a celebration/success page.
+
+---
+
+## 🛠️ Tech Stack & Tools
+
+*   **Framework:** Next.js 16 (App Router)
+*   **Core Logic:** React 19 & TypeScript
+*   **Styling:** Tailwind CSS v4
+*   **Icons:** Lucide React
+*   **Accessibility:** Radix UI Dialog primitives (for Cart and Wishlist Drawers)
+*   **Package Manager:** Yarn
+
+---
+
+## 📂 Project Structure
+
+```
+src/
+├── app/                       # Next.js App Router pages
+│   ├── (public)/              # Main public route group
+│   │   ├── about/             # About page
+│   │   ├── contact/           # Contact/Support form page
+│   │   ├── login/             # Login / Authentication page (Mock)
+│   │   ├── product/           # Product listing & details
+│   │   │   ├── [id]/          # Dynamic single product detail page
+│   │   │   └── page.tsx       # Main product grid with category filters
+│   │   ├── profile/           # User dashboard and session info page
+│   │   ├── purchase/          # Simulated checkout & success pages
+│   │   └── page.tsx           # Homepage with Hero & Featured section
+│   ├── layout.tsx             # Root layout wrapping Navbar, Footer, and Context Providers
+│   └── globals.css            # Tailwind directives and global styles/animations
+├── components/                # Reusable UI components
+│   ├── AddToCartButton.tsx    # Action button for Cart state
+│   ├── CartButton.tsx         # Navbar button displaying cart badge count
+│   ├── CartSidebar.tsx        # Radix UI dialog sliding cart panel
+│   ├── WishlistButton.tsx     # Navbar button displaying wishlist badge count
+│   ├── WishlistSidebar.tsx    # Radix UI dialog sliding wishlist panel
+│   ├── WishlistToggleButton.tsx# Dynamic favorite toggle button on product cards
+│   ├── ProductCard.tsx        # Individual product card UI
+│   ├── Navbar.tsx             # Top header navigation & state triggers
+│   ├── Footer.tsx             # Bottom information navigation
+│   └── ui/                    # Base UI / shadcn/ui custom design components
+├── context/                   # React Context Providers for global state
+│   ├── CartContext.tsx        # Global shopping cart context and actions
+│   └── WishlistContext.tsx    # Global wishlist context and actions
+├── data/                      # Mock static data files
+│   └── product_data.json      # Library of sample products
+└── types/                     # Shared TypeScript interfaces
+    └── product.ts             # Product schema definitions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📋 Data Contract (`product.ts`)
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+All product items are loaded statically from `src/data/product_data.json` and must adhere strictly to the following TypeScript interface structure:
 
-## Learn More
+```typescript
+export interface Product {
+  id: string;
+  name: string;
+  price: number;
+  image: string;
+  category: string;
+  description: string;
+  rating: number;
+}
+```
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## ⚡ Getting Started
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Follow these instructions to set up the project locally on your machine.
 
-## Deploy on Vercel
+### Prerequisites
+Make sure you have [Node.js](https://nodejs.org) and [Yarn](https://yarnpkg.com/) installed.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### Installation
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repository to your local workspace:
+   ```bash
+   git clone <repository-url>
+   cd inspire_soft
+   ```
+
+2. Install dependencies:
+   ```bash
+   yarn install
+   ```
+
+3. Run the development server:
+   ```bash
+   yarn dev
+   ```
+
+4. Open [http://localhost:3000](http://localhost:3000) in your browser to view the application.
+
+---
+
+## ⚠️ Notes for Developers (Mock Project Constraints)
+
+*   **No Real Backend:** All pages (Login, Checkout, and Profile) operate strictly in the client-side state. Do not implement server API calls or real payment integrations.
+*   **State Persistence:** Cart and Wishlist statuses operate using pure React Context. User sessions utilize `localStorage` for UI testing purposes only.
+*   **Images:** Product assets are loaded using high-quality placeholder URLs (`https://placehold.co/...`). Do not upload heavy static image files.
