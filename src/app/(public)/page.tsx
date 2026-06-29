@@ -1,6 +1,12 @@
 import Link from 'next/link';
 import productsData from '../../data/product_data.json';
 import AddToCartButton from '../../components/AddToCartButton';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Home",
+  description: "Welcome to Inspire Soft - Your premier destination for curated lifestyle products. Discover high-quality electronics, modern apparel, accessories, and home decor.",
+};
 
 export default function Home() {
   // Select first 4 products for featured section

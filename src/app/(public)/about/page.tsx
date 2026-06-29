@@ -1,9 +1,13 @@
-"use client"
-
 import React from 'react'
 import { Zap, Shield, HeartHandshake } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: "About Us",
+  description: "Learn about Inspire Soft, our story, core values of innovation and quality, and our mission to deliver premium lifestyle products.",
+}
 
 export default function AboutPage() {
   return (

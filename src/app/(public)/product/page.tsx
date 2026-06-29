@@ -1,5 +1,11 @@
 import ProductCard from '../../../components/ProductCard';
 import productsData from '../../../data/product_data.json';
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
+  title: "Shop Products",
+  description: "Browse our premium range of curated lifestyle items, including high-quality electronics, modern apparel, accessories, and home goods.",
+};
 
 export default function ProductListingPage() {
   return (

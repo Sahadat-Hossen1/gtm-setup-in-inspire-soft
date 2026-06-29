@@ -22,8 +22,11 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Inspire Soft",
-  description: "Curated products for the modern lifestyle",
+  title: {
+    default: "Inspire Soft | Curated Products",
+    template: "%s | Inspire Soft",
+  },
+  description: "Explore curated products for the modern lifestyle at Inspire Soft. Shop high-quality electronics, modern apparel, accessories, and home goods.",
 };
 
 const GTM_ID = process.env.NEXT_PUBLIC_GTM_ID || "";

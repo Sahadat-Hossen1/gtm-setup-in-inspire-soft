@@ -4,9 +4,36 @@ import Image from 'next/image';
 import AddToCartButton from '../../../../components/AddToCartButton';
 import WishlistToggleButton from '../../../../components/WishlistToggleButton';
 import productsData from '../../../../data/product_data.json';
+import type { Metadata } from 'next';
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
+}
+
+export async function generateMetadata({ params }: ProductDetailPageProps): Promise<Metadata> {
+  const resolvedParams = await params;
+  const product = productsData.find((p) => p.id === resolvedParams.id);
+  
+  if (!product) {
+    return {
+      title: 'Product Not Found',
+    };
+  }
+
+  return {
+    title: product.name,
+    description: product.description,
+    openGraph: {
+      title: product.name,
+      description: product.description,
+      images: [
+        {
+          url: product.image,
+          alt: product.name,
+        },
+      ],
+    },
+  };
 }
 
 export default async function ProductDetailPage({ params }: ProductDetailPageProps) {
