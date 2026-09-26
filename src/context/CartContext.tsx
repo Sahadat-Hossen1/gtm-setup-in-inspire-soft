@@ -1,7 +1,8 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { createContext, useContext, useState, ReactNode } from 'react';
 import { Product } from '../types/product';
+import { trackAddToCart } from '../lib/gtm';
 
 interface CartItem extends Product {
   quantity: number;
@@ -33,6 +34,14 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const addToCart = (product: Product) => {
+    trackAddToCart({
+      item_id: product.id,
+      item_name: product.name,
+      price: product.price,
+      item_category: product.category,
+      currency: 'USD',
+    });
+
     setItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {

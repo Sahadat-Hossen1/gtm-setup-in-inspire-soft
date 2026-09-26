@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
+import { trackPurchase } from '@/lib/gtm'
 
 export default function PurchaseClient() {
   const getStoredSession = () => {
@@ -52,7 +53,7 @@ export default function PurchaseClient() {
 
     const formData = new FormData(e.currentTarget)
     const zipCode = String(formData.get('zipCode') || '')
-    const generatedOrderNumber = `ORD-${items.length}${zipCode.slice(-5).padStart(5, '0')}`
+    const generatedOrderNumber = `ORD-${crypto.randomUUID()}`
     const orderData = {
       orderNumber: generatedOrderNumber,
       userEmail: userSession.email,
@@ -90,6 +91,18 @@ export default function PurchaseClient() {
       setOrderNumber(generatedOrderNumber)
       setIsSubmitting(false)
       setIsPlaced(true)
+      trackPurchase(
+        generatedOrderNumber,
+        items.map((item) => ({
+          item_id: item.id,
+          item_name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          item_category: item.category,
+          currency: 'USD',
+        })),
+        totalPrice
+      )
       clearCart()
     }, 1500)
   }

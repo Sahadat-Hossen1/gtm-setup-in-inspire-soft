@@ -6,6 +6,7 @@ import { useCart } from '@/context/CartContext'
 import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
+import { trackBeginCheckout } from '@/lib/gtm'
 
 export default function CartSidebar() {
   const { isOpen, setIsOpen, items, removeFromCart, updateQuantity } = useCart()
@@ -15,6 +16,21 @@ export default function CartSidebar() {
   // Calculate total price and item count
   const totalPrice = items.reduce((total, item) => total + (item.price * item.quantity), 0)
   const totalItems = items.reduce((total, item) => total + item.quantity, 0)
+
+  const handleBeginCheckout = () => {
+    trackBeginCheckout(
+      items.map((item) => ({
+        item_id: item.id,
+        item_name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        item_category: item.category,
+        currency: 'USD',
+      })),
+      totalPrice
+    )
+    setIsOpen(false)
+  }
 
   return (
     <>
@@ -53,7 +69,7 @@ export default function CartSidebar() {
               </div>
               <h3 className="text-xl font-semibold">Your cart is empty</h3>
               <p className="text-muted-foreground text-sm max-w-[250px]">
-                Looks like you haven't added anything to your cart yet.
+                Looks like you haven&apos;t added anything to your cart yet.
               </p>
               <Button 
                 onClick={() => setIsOpen(false)} 
@@ -133,7 +149,7 @@ export default function CartSidebar() {
               </div>
             </div>
             
-            <Link href="/purchase" onClick={() => setIsOpen(false)} className="block w-full">
+            <Link href="/purchase" onClick={handleBeginCheckout} className="block w-full">
               <Button className="w-full h-14 rounded-xl text-base font-semibold shadow-lg shadow-primary/20 hover:scale-[1.02] transition-transform">
                 Proceed to Checkout
               </Button>

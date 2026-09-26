@@ -1,13 +1,29 @@
 "use client";
 
 import { useCart } from '../context/CartContext';
+import { trackViewCart } from '../lib/gtm';
 
 export default function CartButton() {
-  const { setIsOpen, cartCount } = useCart();
+  const { setIsOpen, cartCount, items } = useCart();
+
+  const handleOpenCart = () => {
+    trackViewCart(
+      items.map((item) => ({
+        item_id: item.id,
+        item_name: item.name,
+        price: item.price,
+        quantity: item.quantity,
+        item_category: item.category,
+        currency: 'USD',
+      })),
+      items.reduce((total, item) => total + item.price * item.quantity, 0)
+    );
+    setIsOpen(true);
+  };
 
   return (
     <button 
-      onClick={() => setIsOpen(true)} 
+      onClick={handleOpenCart} 
       className="flex items-center gap-2 bg-white/10 border border-white/20 text-white py-2 px-5 rounded-full text-sm cursor-pointer transition-all hover:bg-white/20 hover:-translate-y-[1px]"
     >
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
