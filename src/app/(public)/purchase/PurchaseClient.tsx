@@ -6,7 +6,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
-import { trackPurchase } from '@/lib/gtm'
+import { trackAddPaymentInfo, trackAddShippingInfo, trackPurchase } from '@/lib/gtm'
 
 export default function PurchaseClient() {
   const getStoredSession = () => {
@@ -53,6 +53,16 @@ export default function PurchaseClient() {
 
     const formData = new FormData(e.currentTarget)
     const zipCode = String(formData.get('zipCode') || '')
+    const shippingTier = String(formData.get('shippingTier') || 'standard')
+    const paymentType = String(formData.get('paymentType') || 'cash_on_delivery')
+    const trackingItems = items.map((item) => ({
+      item_id: item.id,
+      item_name: item.name,
+      price: item.price,
+      quantity: item.quantity,
+      item_category: item.category,
+      currency: 'USD',
+    }))
     const generatedOrderNumber = `ORD-${crypto.randomUUID()}`
     const orderData = {
       orderNumber: generatedOrderNumber,
@@ -85,6 +95,9 @@ export default function PurchaseClient() {
     const savedOrders = JSON.parse(localStorage.getItem('inspire_orders') || '[]')
     localStorage.setItem('inspire_orders', JSON.stringify([orderData, ...savedOrders]))
     setIsSubmitting(true)
+
+    trackAddShippingInfo(trackingItems, shippingTier, totalPrice)
+    trackAddPaymentInfo(trackingItems, paymentType, totalPrice)
     
     // Simulate network delay for placing order
     setTimeout(() => {
@@ -93,14 +106,7 @@ export default function PurchaseClient() {
       setIsPlaced(true)
       trackPurchase(
         generatedOrderNumber,
-        items.map((item) => ({
-          item_id: item.id,
-          item_name: item.name,
-          price: item.price,
-          quantity: item.quantity,
-          item_category: item.category,
-          currency: 'USD',
-        })),
+        trackingItems,
         totalPrice
       )
       clearCart()
@@ -227,6 +233,29 @@ export default function PurchaseClient() {
                     </div>
                     <input required name="phone" type="tel" placeholder="+1 (555) 000-0000" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background pl-11 pr-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground/50 focus-visible:outline-none focus-visible:ring-0 focus-visible:border-primary transition-colors shadow-sm" />
                   </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-5 pt-4">
+              <h2 className="text-lg font-semibold flex items-center gap-2 border-b border-border/50 pb-2">
+                <CreditCard className="w-5 h-5 text-primary" />
+                Delivery & Payment
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold ml-1 text-foreground/80">Shipping Method</label>
+                  <select name="shippingTier" defaultValue="standard" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm focus-visible:outline-none focus-visible:border-primary">
+                    <option value="standard">Standard Shipping</option>
+                    <option value="express">Express Shipping</option>
+                  </select>
+                </div>
+                <div className="space-y-2">
+                  <label className="text-sm font-semibold ml-1 text-foreground/80">Payment Method</label>
+                  <select name="paymentType" defaultValue="cash_on_delivery" className="flex h-12 w-full rounded-2xl border-2 border-input/50 bg-background px-4 py-2 text-sm focus-visible:outline-none focus-visible:border-primary">
+                    <option value="cash_on_delivery">Cash on Delivery</option>
+                    <option value="card">Card</option>
+                  </select>
                 </div>
               </div>
             </div>

@@ -1,6 +1,7 @@
-import ProductCard from '../../../components/ProductCard';
+import ProductCatalog from '../../../components/ProductCatalog';
 import productsData from '../../../data/product_data.json';
 import type { Metadata } from 'next';
+import { ProductListViewTracker } from '../../../components/ProductViewTracker';
 
 export const metadata: Metadata = {
   title: "Shop Products",
@@ -8,8 +9,17 @@ export const metadata: Metadata = {
 };
 
 export default function ProductListingPage() {
+  const trackingItems = productsData.map((product) => ({
+    item_id: product.id,
+    item_name: product.name,
+    price: product.price,
+    item_category: product.category,
+    currency: 'USD',
+  }));
+
   return (
     <>
+      <ProductListViewTracker items={trackingItems} />
       <main className="flex-1 mt-[70px] py-12 px-[5%]">
         <div className="mb-12 text-center">
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight mb-4">
@@ -20,11 +30,7 @@ export default function ProductListingPage() {
           </p>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
-          {productsData.map((product) => (
-            <ProductCard key={product.id} product={product} />
-          ))}
-        </div>
+        <ProductCatalog products={productsData} />
       </main>
     </>
   );

@@ -5,6 +5,7 @@ import AddToCartButton from '../../../../components/AddToCartButton';
 import WishlistToggleButton from '../../../../components/WishlistToggleButton';
 import productsData from '../../../../data/product_data.json';
 import type { Metadata } from 'next';
+import { ProductViewTracker } from '../../../../components/ProductViewTracker';
 
 interface ProductDetailPageProps {
   params: Promise<{ id: string }>;
@@ -45,8 +46,17 @@ export default async function ProductDetailPage({ params }: ProductDetailPagePro
     notFound();
   }
 
+  const trackingItem = {
+    item_id: product.id,
+    item_name: product.name,
+    price: product.price,
+    item_category: product.category,
+    currency: 'USD',
+  };
+
   return (
     <>
+      <ProductViewTracker item={trackingItem} />
       <main className="flex-1 mt-[70px] py-12 px-[5%] max-w-7xl mx-auto w-full">
         <Link href="/product" className="inline-flex items-center text-zinc-500 hover:text-zinc-300 transition-colors mb-8 font-medium">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">

@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { Button } from './ui/button';
 import { useCart } from '../context/CartContext';
 import WishlistToggleButton from './WishlistToggleButton';
+import { trackSelectItem } from '@/lib/gtm';
 
 interface Product {
   id: string;
@@ -22,10 +23,21 @@ interface ProductCardProps {
 
 export default function ProductCard({ product }: ProductCardProps) {
   const { addToCart } = useCart();
+  const trackingItem = {
+    item_id: product.id,
+    item_name: product.name,
+    price: product.price,
+    item_category: product.category,
+    currency: 'USD',
+  };
+
+  const handleProductSelect = () => {
+    trackSelectItem(trackingItem, 'all_products');
+  };
 
   return (
     <div className="group bg-[#0a0a0a] border border-[#222] rounded-2xl p-4 transition-all duration-300 ease-out flex flex-col hover:border-[#444] hover:shadow-2xl">
-      <Link href={`/product/${product.id}`} className="w-full aspect-[4/5] bg-[#111] rounded-xl mb-5 flex items-center justify-center overflow-hidden relative cursor-pointer block">
+      <Link href={`/product/${product.id}`} onClick={handleProductSelect} className="w-full aspect-[4/5] bg-[#111] rounded-xl mb-5 flex items-center justify-center overflow-hidden relative cursor-pointer block">
         <Image 
           src={product.image} 
           alt={product.name}
@@ -42,7 +54,7 @@ export default function ProductCard({ product }: ProductCardProps) {
           {product.category}
         </span>
         
-        <Link href={`/product/${product.id}`} className="flex justify-between items-start">
+        <Link href={`/product/${product.id}`} onClick={handleProductSelect} className="flex justify-between items-start">
           <h3 className="text-base font-medium text-zinc-100 leading-snug group-hover:text-white transition-colors line-clamp-1">
             {product.name}
           </h3>
