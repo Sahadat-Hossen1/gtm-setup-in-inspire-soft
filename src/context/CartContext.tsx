@@ -2,7 +2,7 @@
 
 import { createContext, useContext, useState, ReactNode } from 'react';
 import { Product } from '../types/product';
-import { trackAddToCart } from '../lib/gtm';
+import { trackAddToCart, trackRemoveFromCart } from '../lib/gtm';
 
 interface CartItem extends Product {
   quantity: number;
@@ -55,14 +55,48 @@ export function CartProvider({ children }: { children: ReactNode }) {
   };
 
   const removeFromCart = (id: string) => {
+    const item = items.find((cartItem) => cartItem.id === id);
+
+    if (item) {
+      trackRemoveFromCart({
+        item_id: item.id,
+        item_name: item.name,
+        price: item.price,
+        item_category: item.category,
+        currency: 'USD',
+      }, item.quantity);
+    }
+
     setItems((prev) => prev.filter((p) => p.id !== id));
   };
 
   const updateQuantity = (id: string, quantity: number) => {
+    const item = items.find((cartItem) => cartItem.id === id);
+
+    if (!item || quantity === item.quantity) {
+      return;
+    }
+
     if (quantity < 1) {
       removeFromCart(id);
       return;
     }
+
+    const quantityDifference = Math.abs(quantity - item.quantity);
+    const trackingItem = {
+      item_id: item.id,
+      item_name: item.name,
+      price: item.price,
+      item_category: item.category,
+      currency: 'USD',
+    };
+
+    if (quantity > item.quantity) {
+      trackAddToCart(trackingItem, quantityDifference);
+    } else {
+      trackRemoveFromCart(trackingItem, quantityDifference);
+    }
+
     setItems((prev) => prev.map((item) => item.id === id ? { ...item, quantity } : item));
   };
 

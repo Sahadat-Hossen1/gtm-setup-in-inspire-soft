@@ -3,6 +3,7 @@
 import React from 'react'
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
 import { Button } from '@/components/ui/button'
+import { trackContactSubmission } from '@/lib/gtm'
 
 export default function ContactClient() {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -19,6 +20,7 @@ export default function ContactClient() {
     }
 
     console.log('Contact form submitted:', contactData)
+    trackContactSubmission()
     e.currentTarget.reset()
   }
 

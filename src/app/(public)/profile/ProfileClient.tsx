@@ -55,10 +55,11 @@ const getProfileState = (): ProfileState | null => {
     }
 
     const namePart = session.email.split('@')[0]
-    const name = namePart
+    const fallbackName = namePart
       .split('.')
       .map((part: string) => part.charAt(0).toUpperCase() + part.slice(1))
       .join(' ')
+    const name = session.name || fallbackName
     const nameParts = name.split(' ')
     const initials = nameParts.length >= 2
       ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
@@ -90,7 +91,7 @@ export default function ProfileClient() {
 
   const handleSignOut = () => {
     localStorage.removeItem('user_session')
-    router.push('/login')
+    router.push('/profile')
   }
 
   // Show nothing while checking auth to prevent flicker

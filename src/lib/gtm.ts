@@ -164,3 +164,24 @@ export const trackSearch = (searchTerm: string, resultsCount?: number) => {
     ...(resultsCount && { search_results_count: resultsCount }),
   });
 };
+
+export const trackSignUp = (method: string = 'email') => {
+  sendGTMEvent({
+    event: 'sign_up',
+    method,
+  });
+};
+
+export const trackLogin = (method: string = 'email') => {
+  sendGTMEvent({
+    event: 'login',
+    method,
+  });
+};
+
+export const trackContactSubmission = () => {
+  sendGTMEvent({
+    event: 'generate_lead',
+    form_name: 'contact_form',
+  });
+};

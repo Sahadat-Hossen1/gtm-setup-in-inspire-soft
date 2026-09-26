@@ -5,6 +5,7 @@ import { Mail, Lock, ArrowRight } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
+import { trackLogin } from '@/lib/gtm'
 
 export default function LoginClient() {
   const [isLoading, setIsLoading] = useState(false)
@@ -27,6 +28,7 @@ export default function LoginClient() {
     // Simulate a brief loading state for better UX
     setTimeout(() => {
       localStorage.setItem('user_session', JSON.stringify(loginData))
+      trackLogin('email')
       
       setIsLoading(false)
       // Redirect to profile page
@@ -97,7 +99,7 @@ export default function LoginClient() {
           
           <div className="mt-8 text-center text-sm font-medium">
             <span className="text-muted-foreground">Do not have an account? </span>
-            <Link href="#" className="text-primary hover:underline ml-1">
+            <Link href="/signup" className="text-primary hover:underline ml-1">
               Sign up
             </Link>
           </div>
