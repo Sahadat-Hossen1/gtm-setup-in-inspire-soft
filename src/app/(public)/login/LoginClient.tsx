@@ -9,31 +9,65 @@ import { trackLogin } from '@/lib/gtm'
 
 export default function LoginClient() {
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
+    setError('')
     setIsLoading(true)
     
     const formData = new FormData(e.currentTarget)
-    const data = Object.fromEntries(formData.entries())
-    const email = String(data.email)
-    const loginData = {
-      email,
-      loggedInAt: new Date().toISOString(),
-    }
+    const inputEmail = String(formData.get('email') || '').trim().toLowerCase()
     
-    console.log("Login submitted:", loginData)
-    
-    // Simulate a brief loading state for better UX
-    setTimeout(() => {
-      localStorage.setItem('user_session', JSON.stringify(loginData))
-      trackLogin('email')
+    // লোকালস্টোরেজে পূর্বে রেজিস্টার করা বা সংরক্ষিত ইউজারদের সাথে ইমেইল মেলানো
+    let matchedUser: { name?: string; email: string } | null = null
+
+    try {
+      const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '[]')
+      const foundInRegistered = registeredUsers.find((u: { email?: string }) => u.email?.toLowerCase() === inputEmail)
       
+      if (foundInRegistered) {
+        matchedUser = foundInRegistered
+      } else {
+        // সেশনে পূর্বে থাকা ইমেইল দিয়েও চেক করা
+        const sessionStr = localStorage.getItem('user_session')
+        if (sessionStr) {
+          const session = JSON.parse(sessionStr)
+          if (session?.email?.toLowerCase() === inputEmail) {
+            matchedUser = session
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error verifying user credentials:', err)
+    }
+
+    // পাসওয়ার্ড মিলানোর দরকার নেই - ইমেইল মিললেই লগইন অ্যালাউড
+    if (matchedUser) {
+      const loginData = {
+        name: matchedUser.name || inputEmail.split('@')[0],
+        email: matchedUser.email,
+        loggedInAt: new Date().toISOString(),
+      }
+      
+      setTimeout(() => {
+        localStorage.setItem('user_session', JSON.stringify(loginData))
+        
+        const nameParts = (loginData.name || '').split(' ')
+        trackLogin('email', {
+          email: loginData.email,
+          first_name: nameParts[0] || undefined,
+          last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined,
+        })
+        
+        setIsLoading(false)
+        router.push('/profile')
+      }, 500)
+    } else {
       setIsLoading(false)
-      // Redirect to profile page
-      router.push('/profile')
-    }, 1000)
+      setError('This email was not found in localStorage. Please sign up first.')
+    }
   }
 
   return (
@@ -44,6 +78,12 @@ export default function LoginClient() {
             <h1 className="text-3xl font-extrabold text-foreground mb-3 tracking-tight">Welcome Back</h1>
             <p className="text-muted-foreground text-sm">Sign in to your Inspire Soft account to continue</p>
           </div>
+
+          {error && (
+            <div className="mb-6 p-4 rounded-xl bg-destructive/10 border border-destructive/20 text-destructive text-sm font-medium">
+              {error}
+            </div>
+          )}
 
           <form onSubmit={handleSubmit} className="space-y-6">
             <div className="space-y-2">

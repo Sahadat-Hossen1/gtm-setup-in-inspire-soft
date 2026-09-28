@@ -12,6 +12,24 @@ export interface GTMItem {
   currency?: string;
 }
 
+export interface GTMUserData {
+  email?: string;
+  phone_number?: string;
+  first_name?: string;
+  last_name?: string;
+  city?: string;
+  postal_code?: string;
+  country?: string;
+}
+
+export interface ContactFormData {
+  firstName: string;
+  lastName: string;
+  email: string;
+  subject: string;
+  message: string;
+}
+
 export interface GTMEcommerceData {
   items: GTMItem[];
   value?: number;
@@ -23,6 +41,7 @@ export interface GTMEcommerceData {
   payment_type?: string;
   coupon?: string;
   affiliation?: string;
+  user_data?: GTMUserData;
 }
 
 export type GTMEventType =
@@ -36,4 +55,7 @@ export type GTMEventType =
   | 'add_shipping_info'
   | 'add_payment_info'
   | 'purchase'
-  | 'search';
+  | 'search'
+  | 'generate_lead'
+  | 'email_click'
+  | 'whatsapp_click';

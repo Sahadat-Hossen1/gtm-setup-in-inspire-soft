@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, ReactNode } from 'react';
+import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { Product } from '../types/product';
 import { trackAddToCart, trackRemoveFromCart } from '../lib/gtm';
 
@@ -19,12 +19,40 @@ interface CartContextProps {
   cartCount: number;
 }
 
+const CART_STORAGE_KEY = 'inspire_cart';
+
 const CartContext = createContext<CartContextProps | undefined>(undefined);
 
 export function CartProvider({ children }: { children: ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([]);
   const [isOpen, setIsOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // ব্রাউজার লোকালস্টোরেজ থেকে কার্ট লোড করা
+  useEffect(() => {
+    try {
+      const savedCart = localStorage.getItem(CART_STORAGE_KEY);
+      if (savedCart) {
+        setItems(JSON.parse(savedCart));
+      }
+    } catch (err) {
+      console.error('Failed to load cart from localStorage:', err);
+    } finally {
+      setIsLoaded(true);
+    }
+  }, []);
+
+  // কার্ট আইটেম পরিবর্তন হলে লোকালস্টোরেজে সেভ করা
+  useEffect(() => {
+    if (isLoaded) {
+      try {
+        localStorage.setItem(CART_STORAGE_KEY, JSON.stringify(items));
+      } catch (err) {
+        console.error('Failed to save cart to localStorage:', err);
+      }
+    }
+  }, [items, isLoaded]);
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -102,6 +130,11 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const clearCart = () => {
     setItems([]);
+    try {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    } catch (err) {
+      console.error('Failed to clear cart from localStorage:', err);
+    }
   };
 
   const cartCount = items.reduce((total, item) => total + item.quantity, 0);

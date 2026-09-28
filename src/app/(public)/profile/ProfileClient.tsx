@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react'
 import { User, Package, MapPin, Settings, LogOut, ChevronRight, Edit2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { useRouter } from 'next/navigation'
+import { getStoredOrders } from '@/lib/orders'
 
 interface SavedOrder {
   orderNumber: string
@@ -64,7 +65,7 @@ const getProfileState = (): ProfileState | null => {
     const initials = nameParts.length >= 2
       ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
       : name.substring(0, 2).toUpperCase()
-    const orders = JSON.parse(localStorage.getItem('inspire_orders') || '[]') as SavedOrder[]
+    const orders = getStoredOrders()
 
     return {
       email: session.email,

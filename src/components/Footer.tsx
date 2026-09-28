@@ -1,4 +1,7 @@
+"use client";
+
 import Link from 'next/link';
+import { trackEmailClick, trackWhatsAppClick } from '@/lib/gtm';
 
 export default function Footer() {
   return (
@@ -8,9 +11,27 @@ export default function Footer() {
           <div className="text-2xl font-extrabold bg-gradient-to-r from-[#ff7e5f] to-[#feb47b] bg-clip-text text-transparent tracking-tight mb-4 inline-block">
             INSPIRE
           </div>
-          <p className="max-w-[300px] leading-relaxed text-gray-500">
+          <p className="max-w-[300px] leading-relaxed text-gray-500 mb-3">
             Curating exceptional products for the modern lifestyle. Quality without compromise.
           </p>
+          <div className="flex flex-col gap-2 text-sm">
+            <a 
+              href="mailto:hello@inspiresoft.com" 
+              onClick={() => trackEmailClick('hello@inspiresoft.com', 'footer')}
+              className="text-gray-400 hover:text-[#ff7e5f] transition-colors flex items-center gap-1.5"
+            >
+              <span>✉</span> hello@inspiresoft.com
+            </a>
+            <a 
+              href="https://wa.me/15550000000" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              onClick={() => trackWhatsAppClick('+15550000000', 'footer')}
+              className="text-emerald-400 hover:text-emerald-300 transition-colors flex items-center gap-1.5"
+            >
+              <span>💬</span> WhatsApp: +1 (555) 000-0000
+            </a>
+          </div>
         </div>
         
         <div className="flex flex-col gap-3">

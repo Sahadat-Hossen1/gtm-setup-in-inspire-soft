@@ -1,26 +1,38 @@
 "use client"
 
-import React from 'react'
-import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react'
+import React, { useState } from 'react'
+import { Mail, Phone, MapPin, Clock, Send, MessageCircle, CheckCircle2 } from 'lucide-react'
 import { Button } from '@/components/ui/button'
-import { trackContactSubmission } from '@/lib/gtm'
+import { trackContactSubmission, trackEmailClick, trackWhatsAppClick } from '@/lib/gtm'
 
 export default function ContactClient() {
+  const [toastMessage, setToastMessage] = useState<string | null>(null)
+
+  const showToast = (message: string) => {
+    setToastMessage(message)
+    setTimeout(() => {
+      setToastMessage(null)
+    }, 4000)
+  }
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
 
     const formData = new FormData(e.currentTarget)
     const contactData = {
-      firstName: String(formData.get('firstName') || ''),
-      lastName: String(formData.get('lastName') || ''),
-      email: String(formData.get('email') || ''),
-      subject: String(formData.get('subject') || ''),
-      message: String(formData.get('message') || ''),
-      submittedAt: new Date().toISOString(),
+      firstName: String(formData.get('firstName') || '').trim(),
+      lastName: String(formData.get('lastName') || '').trim(),
+      email: String(formData.get('email') || '').trim(),
+      subject: String(formData.get('subject') || '').trim(),
+      message: String(formData.get('message') || '').trim(),
     }
 
     console.log('Contact form submitted:', contactData)
-    trackContactSubmission()
+    // GTM DataLayer এ ফর্মের সব ফিল্ডের ডেটা সহ লিড ইভেন্ট পুশ করা
+    trackContactSubmission(contactData)
+
+    // UI তে সাকসেস টোস্টার শো করা
+    showToast('Thank you! Your message has been sent successfully. We will get back to you soon.')
     e.currentTarget.reset()
   }
 
@@ -58,7 +70,11 @@ export default function ContactClient() {
                   <div>
                     <h3 className="text-xl font-semibold mb-1">Email</h3>
                     <p className="text-muted-foreground mb-2">Our friendly team is here to help.</p>
-                    <a href="mailto:hello@inspiresoft.com" className="text-primary font-medium hover:underline text-lg">
+                    <a 
+                      href="mailto:hello@inspiresoft.com" 
+                      onClick={() => trackEmailClick('hello@inspiresoft.com', 'contact_page')}
+                      className="text-primary font-medium hover:underline text-lg"
+                    >
                       hello@inspiresoft.com
                     </a>
                   </div>
@@ -87,6 +103,26 @@ export default function ContactClient() {
                     <p className="text-muted-foreground mb-2">Mon-Fri from 8am to 5pm.</p>
                     <a href="tel:+1(555)000-0000" className="text-primary font-medium hover:underline text-lg">
                       +1 (555) 000-0000
+                    </a>
+                  </div>
+                </div>
+
+                {/* WhatsApp Channel */}
+                <div className="flex items-start gap-5">
+                  <div className="w-14 h-14 rounded-2xl bg-emerald-500/10 flex items-center justify-center shrink-0">
+                    <MessageCircle className="w-7 h-7 text-emerald-500" />
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-semibold mb-1">WhatsApp</h3>
+                    <p className="text-muted-foreground mb-2">Instant chat and real-time support.</p>
+                    <a 
+                      href="https://wa.me/15550000000" 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      onClick={() => trackWhatsAppClick('+15550000000', 'contact_page')}
+                      className="text-emerald-500 font-medium hover:underline text-lg inline-flex items-center gap-1.5"
+                    >
+                      Chat on WhatsApp (+1 555 000-0000)
                     </a>
                   </div>
                 </div>
@@ -181,6 +217,16 @@ export default function ContactClient() {
           </div>
         </div>
       </section>
+
+      {/* Submit Success Toast Notification */}
+      <div 
+        className={`fixed bottom-6 right-6 bg-emerald-600 text-white px-6 py-4 rounded-2xl shadow-2xl z-[100] font-medium transition-all duration-300 ease-out transform flex items-center gap-3 border border-emerald-400/30 ${
+          toastMessage ? 'translate-y-0 opacity-100' : 'translate-y-10 opacity-0 pointer-events-none'
+        }`}
+      >
+        <CheckCircle2 className="w-5 h-5 text-white shrink-0" />
+        <span>{toastMessage}</span>
+      </div>
     </div>
   )
 }

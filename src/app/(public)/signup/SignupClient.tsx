@@ -29,17 +29,45 @@ export default function SignupClient() {
 
     setIsLoading(true)
 
-    const session = {
-      name,
-      email,
-      signedUpAt: new Date().toISOString(),
+    try {
+      const registeredUsers = JSON.parse(localStorage.getItem('registered_users') || '[]')
+      const existingIndex = registeredUsers.findIndex((u: { email?: string }) => u.email?.toLowerCase() === email)
+      const userData = {
+        name,
+        email,
+        registeredAt: new Date().toISOString(),
+      }
+
+      if (existingIndex >= 0) {
+        registeredUsers[existingIndex] = { ...registeredUsers[existingIndex], ...userData }
+      } else {
+        registeredUsers.push(userData)
+      }
+
+      localStorage.setItem('registered_users', JSON.stringify(registeredUsers))
+
+      const session = {
+        name,
+        email,
+        signedUpAt: new Date().toISOString(),
+      }
+
+      localStorage.setItem('user_session', JSON.stringify(session))
+      
+      const nameParts = name.split(' ')
+      trackSignUp('email', {
+        email,
+        first_name: nameParts[0] || undefined,
+        last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined,
+      })
+
+      setIsLoading(false)
+      router.push('/profile')
+    } catch (err) {
+      console.error('Failed to save registered user:', err)
+      setIsLoading(false)
+      setError('An error occurred during registration.')
     }
-
-    localStorage.setItem('user_session', JSON.stringify(session))
-    trackSignUp('email')
-
-    setIsLoading(false)
-    router.push('/profile')
   }
 
   return (

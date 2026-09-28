@@ -6,7 +6,9 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { useCart } from '@/context/CartContext'
-import { trackAddPaymentInfo, trackAddShippingInfo, trackPurchase } from '@/lib/gtm'
+import { trackAddPaymentInfo, trackAddShippingInfo, trackPurchase, trackBeginCheckout } from '@/lib/gtm'
+import { saveStoredOrder } from '@/lib/orders'
+import { GTMUserData } from '@/types/gtm'
 
 export default function PurchaseClient() {
   const getStoredSession = () => {
@@ -40,8 +42,24 @@ export default function PurchaseClient() {
   useEffect(() => {
     if (!userSession) {
       router.push('/login')
+      return
     }
-  }, [router, userSession])
+
+    // Checkout পেজে আসলে begin_checkout ইভেন্ট ফায়ার করা
+    if (items.length > 0) {
+      trackBeginCheckout(
+        items.map((item) => ({
+          item_id: item.id,
+          item_name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          item_category: item.category,
+          currency: 'USD',
+        })),
+        totalPrice
+      )
+    }
+  }, [router, userSession, items, totalPrice])
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -52,9 +70,26 @@ export default function PurchaseClient() {
     }
 
     const formData = new FormData(e.currentTarget)
-    const zipCode = String(formData.get('zipCode') || '')
+    const zipCode = String(formData.get('zipCode') || '').trim()
     const shippingTier = String(formData.get('shippingTier') || 'standard')
     const paymentType = String(formData.get('paymentType') || 'cash_on_delivery')
+    const fullName = String(formData.get('fullName') || '').trim()
+    const email = String(formData.get('email') || userSession.email).trim()
+    const phone = String(formData.get('phone') || '').trim()
+    const city = String(formData.get('city') || '').trim()
+    const streetAddress = String(formData.get('streetAddress') || '').trim()
+
+    const nameParts = fullName.split(' ')
+    const customerUserData: GTMUserData = {
+      email,
+      phone_number: phone || undefined,
+      first_name: nameParts[0] || undefined,
+      last_name: nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined,
+      city: city || undefined,
+      postal_code: zipCode || undefined,
+      country: 'BD',
+    }
+
     const trackingItems = items.map((item) => ({
       item_id: item.id,
       item_name: item.name,
@@ -63,18 +98,19 @@ export default function PurchaseClient() {
       item_category: item.category,
       currency: 'USD',
     }))
+
     const generatedOrderNumber = `ORD-${crypto.randomUUID()}`
     const orderData = {
       orderNumber: generatedOrderNumber,
       userEmail: userSession.email,
       customer: {
-        fullName: String(formData.get('fullName') || ''),
-        email: String(formData.get('email') || userSession.email),
-        phone: String(formData.get('phone') || ''),
+        fullName,
+        email,
+        phone,
       },
       deliveryAddress: {
-        street: String(formData.get('streetAddress') || ''),
-        city: String(formData.get('city') || ''),
+        street: streetAddress,
+        city,
         zipCode,
       },
       items: items.map((item) => ({
@@ -92,23 +128,32 @@ export default function PurchaseClient() {
     }
 
     console.log('Order placed:', orderData)
-    const savedOrders = JSON.parse(localStorage.getItem('inspire_orders') || '[]')
-    localStorage.setItem('inspire_orders', JSON.stringify([orderData, ...savedOrders]))
+    // ১৫ দিনের পুরনো অর্ডার অটো-ক্লিন করে নতুন অর্ডার সেভ
+    saveStoredOrder(orderData)
     setIsSubmitting(true)
 
-    trackAddShippingInfo(trackingItems, shippingTier, totalPrice)
-    trackAddPaymentInfo(trackingItems, paymentType, totalPrice)
+    // শিপিং এবং পেমেন্ট তথ্যের সাথে user data GTM-এ পুশ
+    trackAddShippingInfo(trackingItems, shippingTier, totalPrice, customerUserData)
+    trackAddPaymentInfo(trackingItems, paymentType, totalPrice, customerUserData)
     
     // Simulate network delay for placing order
     setTimeout(() => {
       setOrderNumber(generatedOrderNumber)
       setIsSubmitting(false)
       setIsPlaced(true)
+      
+      // পারচেজ ডেটা এবং কাস্টমার ইউজার ডেটা GTM-এ পুশ
       trackPurchase(
         generatedOrderNumber,
         trackingItems,
-        totalPrice
+        totalPrice,
+        0,
+        0,
+        undefined,
+        customerUserData
       )
+      
+      // পারচেজ সম্পন্ন হলে লোকালস্টোরেজ ও স্টেট থেকে কার্ট খালি করা
       clearCart()
     }, 1500)
   }
