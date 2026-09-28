@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Image from 'next/image';
 import productsData from '../../data/product_data.json';
 import AddToCartButton from '../../components/AddToCartButton';
 import type { Metadata } from 'next';
@@ -59,10 +60,12 @@ export default function Home() {
           {featuredProducts.map((product) => (
             <div key={product.id} className="group bg-white/5 border border-white/10 rounded-3xl p-5 transition-all duration-400 ease-out flex flex-col cursor-pointer hover:bg-white/10 hover:border-white/20 hover:-translate-y-2 hover:shadow-[0_20px_40px_rgba(0,0,0,0.3)]">
               <div className="w-full aspect-[4/3] bg-gradient-to-br from-[#1f1f1f] to-[#121212] rounded-2xl mb-6 flex items-center justify-center overflow-hidden relative">
-                <img 
+                <Image 
                   src={product.image} 
                   alt={product.name}
-                  className="object-cover w-full h-full transition-transform duration-700 ease-out group-hover:scale-105"
+                  fill
+                  className="object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
                 />
               </div>
               <div className="flex flex-col gap-2 flex-1">
